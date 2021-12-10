@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="content-section">
+    <!-- New Post form -->
+    <form method="POST" action="">
+        {{ form.csrf_token }}
+        <fieldset>
+            <legend>{{ legend }}</legend>
+
+            <!-- title -->
+            <div class="form-group">
+                {{ form.title.label(class="form-control-label") }}
+
+                <!-- Input field -->
+                {% if form.title.errors %}
+                    {{ form.title(class="form-control form-control-lg is-invalid") }}
+                    {% for error in form.title.errors %}
+                        <div class="invalid-feedback">
+                            <span>{{ error}}</span>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    {{ form.title(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+
+            <!-- content -->
+            <div class="form-group">
+                {{ form.content.label(class="form-control-label") }}
+
+                <!-- Input field -->
+                {% if form.content.errors %}
+                    {{ form.content(class="form-control form-control-lg is-invalid") }}
+                    {% for error in form.content.errors %}
+                        <div class="invalid-feedback">
+                            <span>{{ error}}</span>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    {{ form.content(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+        </fieldset>
+
+        <!-- Submit Button -->
+        <div class="form-group">
+            {{ form.submit(class="btn btn-outline-info")}}
+        </div>
+    </form>
+</div>
+{% endblock %}

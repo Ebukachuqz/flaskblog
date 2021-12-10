@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="content-section">
+        <!-- Login form -->
+        <form method="POST" action="">
+            {{ form.csrf_token }}
+            <fieldset>
+                <legend>Request Password Reset</legend>
+
+                <!-- Email -->
+                <div class="form-group">
+                    {{ form.email.label(class="form-control-label") }}
+
+                    <!-- Input field -->
+                    {% if form.email.errors %}
+                        {{ form.email(class="form-control form-control-lg is-invalid") }}
+                        {% for error in form.email.errors %}
+                            <div class="invalid-feedback">
+                                <span>{{ error }}</span>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        {{ form.email(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </fieldset>
+
+            <!-- Submit Button -->
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info")}}
+            </div>
+        </form>
+    </div>
+{% endblock content %}

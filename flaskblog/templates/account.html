@@ -1,0 +1,73 @@
+{% extends "layout.html" %}
+{% block content %}
+    <div class="content-section">
+        <div class="media">
+            <img class="rounded-circle account-img" src="{{ profile_pic }}">
+            <div class="media-body">
+                <h2 class="account-heading">{{ current_user.username }}</h2>
+                <p class="text-secondary">{{ current_user.email }}</p>
+            </div>
+        </div>
+        <!-- FORM HERE -->
+
+            <!-- Refisteration form -->
+            <form method="POST" action="" enctype="multipart/form-data">
+                {{ form.csrf_token }}
+                <fieldset>
+                    <legend>Join Us</legend>
+    
+                    <!-- username -->
+                    <div class="form-group">
+                        {{ form.username.label(class="form-control-label") }}
+    
+                        <!-- input field -->
+                        {% if form.username.errors %}
+                            {{ form.username(class="form-control form-control-lg is-invalid") }}
+                            {% for error in form.username.errors %}
+                                <div class="invalid-feedback">
+                                    <span>{{ error }}</span>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            {{ form.username(class="form-control form-control-lg") }}
+                        {% endif %}
+                    </div>
+    
+                    <!-- Email -->
+                    <div class="form-group">
+                        {{ form.email.label(class="form-control-label") }}
+    
+                        <!-- Input field -->
+                        {% if form.email.errors %}
+                            {{ form.email(class="form-control form-control-lg is-invalid") }}
+                            {% for error in form.email.errors %}
+                                <div class="invalid-feedback">
+                                    <span>{{ error }}</span>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            {{ form.email(class="form-control form-control-lg") }}
+                        {% endif %}
+                    </div>
+
+                    <!--Update Profile px -->
+                    <div class="form-group">
+                        {{ form.update_profile_pic.label() }}
+                        {{ form.update_profile_pic(class="form-control-file") }}
+    
+                        <!-- error -->
+                        {% if form.update_profile_pic.errors %}
+                            {% for error in form.update_profile_pic.errors %}
+                                <span class="text-danger">{{ error }}</span></br>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </fieldset>
+    
+                <!-- Submit Button -->
+                <div class="form-group">
+                    {{ form.submit(class="btn btn-outline-info")}}
+                </div>
+            </form>
+    </div>
+{% endblock content %}
