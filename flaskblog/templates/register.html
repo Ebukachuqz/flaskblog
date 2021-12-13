@@ -20,7 +20,7 @@
                             </div>
                         {% endfor %}
                     {% else %}
-                        {{ form.username(class="form-control form-control-lg") }}
+                        {{ form.username(class="form-control form-control-lg", placeholder="What should we call you?") }}
                     {% endif %}
                 </div>
 
@@ -37,7 +37,7 @@
                             </div>
                         {% endfor %}
                     {% else %}
-                        {{ form.email(class="form-control form-control-lg") }}
+                        {{ form.email(class="form-control form-control-lg", placeholder="Your Email") }}
                     {% endif %}
                 </div>
 
@@ -54,7 +54,7 @@
                             </div>
                         {% endfor %}
                     {% else %}
-                        {{ form.password(class="form-control form-control-lg") }}
+                        {{ form.password(class="form-control form-control-lg", placeholder="Must contain a mix of numbers and letters and at least 8 Characters") }}
                     {% endif %}
                 </div>
 
@@ -71,7 +71,7 @@
                             </div>
                         {% endfor %}
                     {% else %}
-                        {{ form.confirm_password(class="form-control form-control-lg") }}
+                        {{ form.confirm_password(class="form-control form-control-lg", placeholder="Re-Type Password") }}
                     {% endif %}
                 </div>
             </fieldset>
