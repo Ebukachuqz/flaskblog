@@ -107,7 +107,7 @@ def request_reset():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         send_reset_email(user)
-        flash('A message has been sent to your mail to reset your password.', 'info')
+        flash("A message has been sent to your mail to reset your password. Please check SPAM if you can't find the mail in INBOX.", 'info')
         return redirect(url_for('users.login'))
     return render_template('request_reset.html', title='Reset Request', form=form)
 

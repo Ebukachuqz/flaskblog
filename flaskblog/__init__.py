@@ -15,7 +15,8 @@ login_manager = LoginManager()
 login_manager.login_view = 'users.login'
 login_manager.login_message_category = 'info'
 mail = Mail()
-CONF_URL = 'https://accounts.google.com/.well-known/openid-configuration'
+
+# oauth Setup
 oauth = OAuth()
 google = oauth.register(
     name='google',
