@@ -6,6 +6,8 @@ from flaskblog.users.models import User
 from flaskblog.posts.models import Post
 from flask_login import login_user, logout_user, current_user, login_required
 from flaskblog.users.utils import send_reset_email, save_picture
+from flaskblog import oauth
+
 
 users = Blueprint('users', __name__)
 
@@ -129,6 +131,22 @@ def reset_password(token):
         return redirect(url_for('users.login'))
     return render_template('reset_password.html', title='Reset Password', form=form)
 
+
+# Sigin with google route
+@users.route('/google-login')
+def google_login():
+    google = oauth.create_client('google')  # create the google oauth client
+    redirect_uri = url_for('users.google_auth', _external=True)
+    return google.authorize_redirect(redirect_uri)
+
+
+@users.route('/google-auth')
+def google_auth():
+    google = oauth.create_client('google')  # create the google oauth client
+    token = google.authorize_access_token()  # Access token from google to get user info
+    resp = google.get('userinfo')  # userinfo contains params specificed in the scope
+    user = resp.json()
+    return user
 
 
 @users.route("/logout")
