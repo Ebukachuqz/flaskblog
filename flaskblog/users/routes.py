@@ -1,3 +1,4 @@
+import json
 from flask import Blueprint, render_template, url_for, flash, redirect, request
 from flaskblog import db, bcrypt
 from flaskblog.users.forms import (RegisterationForm, LoginForm, UpdateAccountForm,
@@ -6,6 +7,8 @@ from flaskblog.users.models import User
 from flaskblog.posts.models import Post
 from flask_login import login_user, logout_user, current_user, login_required
 from flaskblog.users.utils import send_reset_email, save_picture
+from flaskblog import oauth
+
 
 users = Blueprint('users', __name__)
 
@@ -56,7 +59,10 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         # check if user exists and compare the hashed passwords
-        if user and bcrypt.check_password_hash(user.password, password=form.password.data):
+        if user.password==None:
+            # user.password would return None if user registered With google signUp API
+            flash('Login Unsucessful. Please Check Username and Password again', 'danger')
+        elif user and bcrypt.check_password_hash(user.password, password=form.password.data):
             login_user(user, remember=form.remember.data)
 
             # redirect to page user was trying to access or home page if none
@@ -105,7 +111,7 @@ def request_reset():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         send_reset_email(user)
-        flash('A message has been sent to your mail to reset your password.', 'info')
+        flash("A message has been sent to your mail to reset your password. Please check SPAM if you can't find the mail in INBOX.", 'info')
         return redirect(url_for('users.login'))
     return render_template('request_reset.html', title='Reset Request', form=form)
 
@@ -129,6 +135,52 @@ def reset_password(token):
         return redirect(url_for('users.login'))
     return render_template('reset_password.html', title='Reset Password', form=form)
 
+
+# Sigin with google route
+@users.route('/google-login')
+def google_login():
+    google = oauth.create_client('google')  # create the google oauth client
+    redirect_uri = url_for('users.google_auth', _external=True)
+    return google.authorize_redirect(redirect_uri)
+
+
+@users.route('/google-auth')
+def google_auth():
+    google = oauth.create_client('google')  # create the google oauth client
+    token = google.authorize_access_token()  # Access token from google to get user info
+    resp = google.get('userinfo')  # userinfo contains params specificed in the scope
+    user_json = resp.json()
+
+    # Check that email is verified by google
+    if resp.json().get("verified_email"):
+        # Check if user is already registered
+        user = User.query.filter_by(email=user_json["email"]).first()
+        if user:
+            login_user(user)
+            next_page = request.args.get('next')
+            # if user was trying to access a page before redirect them there else to Home page
+            return redirect(next_page) if next_page else redirect(url_for('main.home'))
+        else:
+            # register user and log them in
+            username = user_json["name"]
+            email = user_json["email"]
+            
+            user = User(username=username, email=email)
+
+            # add user to db
+            db.session.add(user)
+            db.session.commit()
+
+            flash(f'Account Created Successfully', 'success')
+            # query db and login user
+            user = User.query.filter_by(email=user_json["email"]).first()
+            login_user(user)
+            return redirect(url_for('main.home'))
+    else:
+        # if not verified by Google redirect user to Login page
+        flash("Sorry that email is not verified By Google.")
+        return redirect(url_for('login'))
+    #return json.dumps(user)
 
 
 @users.route("/logout")
