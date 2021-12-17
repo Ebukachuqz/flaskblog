@@ -59,7 +59,10 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         # check if user exists and compare the hashed passwords
-        if user and bcrypt.check_password_hash(user.password, password=form.password.data):
+        if user.password==None:
+            # user.password would return None if user registered With google signUp API
+            flash('Login Unsucessful. Please Check Username and Password again', 'danger')
+        elif user and bcrypt.check_password_hash(user.password, password=form.password.data):
             login_user(user, remember=form.remember.data)
 
             # redirect to page user was trying to access or home page if none
@@ -161,9 +164,8 @@ def google_auth():
             # register user and log them in
             username = user_json["name"]
             email = user_json["email"]
-            password = 'google'
             
-            user = User(username=username, email=email, password=password)
+            user = User(username=username, email=email)
 
             # add user to db
             db.session.add(user)
