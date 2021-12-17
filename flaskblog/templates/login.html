@@ -52,7 +52,12 @@
             <div class="form-group">
                 {{ form.submit(class="btn btn-outline-info")}}
             </div>
-
+            
+            <!-- Google Sign Up Button -->
+            <h6><b>Or</b></h6>
+            <div>
+            <a href="{{ url_for('users.google_login') }}"><button type="button" class="btn btn-outline-danger"><i class="fab fa-google"></i> Sign In with <b>GOOGLE</b></button></a>
+            </div>
             <!-- forgot password -->
             <small class="text-muted ml-2">
                 <a href="{{ url_for('users.request_reset') }}">Forgot Password?</a>
