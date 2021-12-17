@@ -1,3 +1,4 @@
+import json
 from flask import Blueprint, render_template, url_for, flash, redirect, request
 from flaskblog import db, bcrypt
 from flaskblog.users.forms import (RegisterationForm, LoginForm, UpdateAccountForm,
@@ -145,8 +146,39 @@ def google_auth():
     google = oauth.create_client('google')  # create the google oauth client
     token = google.authorize_access_token()  # Access token from google to get user info
     resp = google.get('userinfo')  # userinfo contains params specificed in the scope
-    user = resp.json()
-    return user
+    user_json = resp.json()
+
+    # Check that email is verified by google
+    if resp.json().get("verified_email"):
+        # Check if user is already registered
+        user = User.query.filter_by(email=user_json["email"]).first()
+        if user:
+            login_user(user)
+            next_page = request.args.get('next')
+            # if user was trying to access a page before redirect them there else to Home page
+            return redirect(next_page) if next_page else redirect(url_for('main.home'))
+        else:
+            # register user and log them in
+            username = user_json["name"]
+            email = user_json["email"]
+            password = 'google'
+            
+            user = User(username=username, email=email, password=password)
+
+            # add user to db
+            db.session.add(user)
+            db.session.commit()
+
+            flash(f'Account Created Successfully', 'success')
+            # query db and login user
+            user = User.query.filter_by(email=user_json["email"]).first()
+            login_user(user)
+            return redirect(url_for('main.home'))
+    else:
+        # if not verified by Google redirect user to Login page
+        flash("Sorry that email is not verified By Google.")
+        return redirect(url_for('login'))
+    #return json.dumps(user)
 
 
 @users.route("/logout")
