@@ -11,3 +11,6 @@ The following environment variables would be needed:
 - GOOGLE_APP_EMAIL (Email for Password-reset sender)
 - GOOGLE_APP_EMAIL_PASSWORD (Email password for Password-reset sender)
 - SQLALCHEMY_DB_URI
+
+# WEB APP URL HOSTED ON HEROKU
+https://flask-blog-blog.herokuapp.com/
